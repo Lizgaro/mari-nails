@@ -33,7 +33,7 @@ const styles = [
         id: 'coquette',
         name: 'Кокеткор',
         icon: <Heart size={16} />,
-        prompt: 'Soft pink nails with delicate 3D ribbon bows, small pearls, lace patterns, dainty feminine aesthetic, almond shape, kawaii coquette style, soft romantic lighting'
+        prompt: 'Soft pink nails with delicate 3D ribbon bows, small pearls, lace patterns, dainty feminine aesthetic, almond shape, romantic balletcore style, soft romantic lighting'
     },
     {
         id: 'old_money',
@@ -45,7 +45,7 @@ const styles = [
         id: 'red',
         name: 'Роковой Красный',
         icon: <Flame size={16} />,
-        prompt: 'Deep wine red color, sharp long stiletto nails, high gloss finish, Louboutin vibe, dangerous woman aesthetic, high contrast editorial, dramatic lighting'
+        prompt: 'Deep wine red color, sharp long stiletto nails, high gloss finish, Louboutin vibe, femme fatale elegance, high contrast editorial, dramatic lighting'
     },
     {
         id: 'aura',
@@ -81,7 +81,7 @@ const styles = [
         id: 'grunge',
         name: 'Гранж Металл',
         icon: <Scissors size={16} />,
-        prompt: 'Distressed metallic nails, silver and rusted gold mix, grunge aesthetic, pierced nail charms, chain details, dark edgy vibe, street style photography'
+        prompt: 'Distressed metallic nails, silver and rusted gold mix, industrial texture, nail charms, chain details, urban fashion vibe, street style photography'
     },
     {
         id: 'tortoise',
