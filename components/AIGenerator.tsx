@@ -203,7 +203,9 @@ const AIGenerator: React.FC = () => {
                 const imgData = data.image.startsWith('data:') ? data.image : `data:image/png;base64,${data.image}`;
                 setGeneratedImage(imgData);
             } else {
-                throw new Error("No image generated");
+                // If no image but we have text, it's likely a refusal or safety filter
+                console.log(`[API] Failure: No image generated. Model response: ${data.result}`);
+                throw new Error(data.result || "Не удалось сгенерировать изображение. Попробуйте другой запрос.");
             }
 
         } catch (err: any) {

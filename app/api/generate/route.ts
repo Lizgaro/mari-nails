@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { GoogleGenAI } from "@google/genai";
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
@@ -16,7 +16,7 @@ try {
 
         ratelimit = new Ratelimit({
             redis: redis,
-            limiter: Ratelimit.slidingWindow(50, '1 h'), // Reduced to 50/h to be safer with free tiers
+            limiter: Ratelimit.slidingWindow(50, '1 h'),
         });
     }
 } catch (e) {
@@ -36,103 +36,86 @@ export async function POST(req: Request) {
             const { success } = await ratelimit.limit(ip);
             if (!success) {
                 console.warn("Rate limit exceeded for IP:", ip);
-                // Return 429 but maybe soft limit for now to not break demo
-                // return NextResponse.json({ error: "Too many requests" }, { status: 429 });
             }
         }
 
         const body = await req.json();
         const { prompt, mode, image } = body;
 
-        // CACHING LOGIC (Optimization)
-        // Only cache 'create' mode as 'edit' is too specific with base64 images
-        if (redis && mode === 'create' && prompt) {
-            const cacheKey = `mari-ai-cache:${Buffer.from(prompt).toString('base64')}`;
-            const cached = await redis.get(cacheKey);
-            if (cached) {
-                console.log(`[API] Serving from cache for: "${prompt.substring(0, 20)}..."`);
-                return NextResponse.json({ result: cached });
-            }
-        }
+        // Initialize NEW SDK
+        const ai = new GoogleGenAI({ apiKey: apiKey });
 
-        // Initialize SDK
-        const genAI = new GoogleGenerativeAI(apiKey);
+        // User requested STRICTLY this model
+        const modelId = "gemini-2.5-flash-image";
 
-        // Using Gemini 2.0 Flash Exp (as confirmed working). 
-        // User requested 2.5, but if API returns 404, we fallback to 2.0.
-        // For now, staying on 2.0-flash-exp as it is the current valid endpoint for this key.
-        const modelId = "gemini-2.0-flash-exp";
+        console.log(`[API] Generation started with NEW SDK. Mode: ${mode}, Model: ${modelId}`);
 
-        const model = genAI.getGenerativeModel({
-            model: modelId,
-            safetySettings: [
-                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
-            ]
-        });
-
-        let result;
-
-        console.log(`[API] Generation started. Mode: ${mode}, Model: ${modelId}`);
+        let response;
 
         if (mode === 'edit' && image) {
-            // Edit Mode: Image + Prompt
-            // Strip base64 prefix if present
+            // Edit Mode
             const base64Data = image.split(',')[1] || image;
+            // Extract mime type if present in data URI, default to png
+            let mimeType = 'image/png';
+            if (image.includes('data:')) {
+                mimeType = image.substring(image.indexOf(':') + 1, image.indexOf(';'));
+            }
 
-            const promptPart = { text: prompt };
-            const imagePart = { inlineData: { mimeType: 'image/png', data: base64Data } };
-
-            result = await model.generateContent([promptPart, imagePart]);
+            response = await ai.models.generateContent({
+                model: modelId,
+                contents: [
+                    {
+                        parts: [
+                            { inlineData: { mimeType, data: base64Data } },
+                            { text: prompt }
+                        ]
+                    }
+                ]
+            });
         } else {
-            // Create Mode: Text Prompt
-            result = await model.generateContent(prompt);
+            // Create Mode
+            response = await ai.models.generateContent({
+                model: modelId,
+                contents: [
+                    {
+                        parts: [
+                            { text: prompt }
+                        ]
+                    }
+                ],
+            });
         }
 
-        const response = await result.response;
-
-        // Extract Image and Text from the response candidates
+        // Parse response from New SDK
         let generatedImage = null;
-        let text = "";
+        let textResult = "";
 
-        // Check if response has candidates and parts
-        if (response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
-            for (const part of response.candidates[0].content.parts) {
-                if (part.inlineData && part.inlineData.data) {
-                    generatedImage = part.inlineData.data;
-                }
-                if (part.text) {
-                    text += part.text;
+        // The structure of response in new SDK might differ slightly, but usually:
+        // response.candidates[0].content.parts...
+        if (response && response.candidates && response.candidates.length > 0) {
+            const parts = response.candidates[0].content.parts;
+            if (parts) {
+                for (const part of parts) {
+                    if (part.inlineData) {
+                        generatedImage = part.inlineData.data;
+                    }
+                    if (part.text) {
+                        textResult += part.text;
+                    }
                 }
             }
         }
 
-        console.log(`[API] Generated Text Length: ${text.length}`);
-        if (text.length < 500) console.log(`[API] Text Preview: ${text}`);
         console.log(`[API] Generated Image: ${generatedImage ? 'YES' : 'NO'}`);
 
-        // If we found an image, format it as data URL if not already
-        let finalResult = text;
         if (generatedImage) {
-            finalResult = `data:image/png;base64,${generatedImage}`;
-        } else if (text) {
-            // Check if the model returned an image link in markdown (possible fallback)
-            // e.g. ![Image](url)
-            // But usually we want inlineData.
-            // If text is all we got, we send text. Frontend might expect image.
+            const finalImage = `data:image/png;base64,${generatedImage}`;
+            return NextResponse.json({ image: finalImage });
+        } else {
+            // Fallback: If no image, return error or text
+            console.log(`[API] Failure: No image. Text: ${textResult}`);
+            return NextResponse.json({ error: textResult || "Не удалось сгенерировать изображение." }, { status: 422 });
         }
-
-        // SAVE TO CACHE
-        if (redis && mode === 'create' && generatedImage) {
-            const cacheKey = `mari-ai-cache:${Buffer.from(prompt).toString('base64')}`;
-            // Cache for 24 hours (86400 seconds)
-            await redis.set(cacheKey, finalResult, { ex: 86400 });
-            console.log(`[API] Cached result for: "${prompt.substring(0, 20)}..."`);
-        }
-
-        return NextResponse.json({ result: finalResult });
 
     } catch (error: any) {
         console.error("API Error details:", error);
