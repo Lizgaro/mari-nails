@@ -599,9 +599,9 @@ const Trends: React.FC = () => {
                                             AI Визуализация Концептов
                                         </span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 pb-4 md:grid md:grid-cols-2 md:gap-4 md:m-0 md:p-0 md:overflow-visible">
                                         {selectedTrend.gallery.map((img, i) => (
-                                            <ScrollReveal key={i} variant="slide-up" delay={0.1 * i} className="rounded-lg overflow-hidden h-40 md:h-48 relative group cursor-pointer">
+                                            <ScrollReveal key={i} variant="slide-up" delay={0.1 * i} className="min-w-[85%] md:min-w-0 shrink-0 snap-center rounded-lg overflow-hidden h-48 md:h-48 relative group cursor-pointer border border-gray-100">
                                                 <BlurImage
                                                     src={img}
                                                     alt={`AI Concept ${i}`}
