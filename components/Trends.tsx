@@ -481,7 +481,12 @@ const Trends: React.FC = () => {
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-3 mt-auto">
-                                            <div className="w-8 h-[1px] bg-secret-hot"></div>
+                                            {/* Circular Avatar with Initial */}
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secret-hot/30 via-secret-pink/20 to-purple-500/20 flex items-center justify-center border border-white/10 shrink-0">
+                                                <span className="font-serif italic text-white/90 text-sm font-medium">
+                                                    {tip.author.charAt(0)}
+                                                </span>
+                                            </div>
                                             <div>
                                                 <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-white group-hover:text-secret-hot transition-colors">{tip.author}</p>
                                                 <p className="font-sans text-[9px] text-gray-500 uppercase">{tip.role}</p>

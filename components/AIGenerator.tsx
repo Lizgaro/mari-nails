@@ -281,13 +281,13 @@ const AIGenerator: React.FC = () => {
                                             </label>
                                         </div>
 
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                        <div className="flex overflow-x-auto gap-3 snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide md:grid md:grid-cols-3 md:m-0 md:p-0 md:overflow-visible md:pb-0">
                                             {displayedStyles.map(style => (
                                                 <button
                                                     key={style.id}
                                                     onClick={() => handleStyleSelect(style.id, style.prompt)}
                                                     className={`
-                                        relative p-4 rounded-xl border text-left transition-all duration-300 group overflow-hidden h-full flex flex-col gap-3
+                                        min-w-[48%] shrink-0 snap-center md:min-w-0 md:shrink relative p-4 rounded-xl border text-left transition-all duration-300 group overflow-hidden h-full flex flex-col gap-3
                                         ${activeStyle === style.id
                                                             ? 'border-secret-hot bg-secret-hot/5 shadow-md'
                                                             : 'border-gray-100 hover:border-gray-300 bg-gray-50/50 hover:bg-white'
