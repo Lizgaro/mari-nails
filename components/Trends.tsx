@@ -357,7 +357,7 @@ const Trends: React.FC = () => {
                         ref={scrollContainerRef}
                         onScroll={() => handleScroll(scrollContainerRef, setScrollProgress)}
                         className={viewMode === 'slider'
-                            ? "flex overflow-x-auto gap-6 md:gap-8 pb-12 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing touch-pan-y snap-x snap-mandatory"
+                            ? "flex overflow-x-auto gap-6 md:gap-8 pb-12 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing snap-x snap-mandatory"
                             : "grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 animate-fade-in"
                         }
                     >
@@ -469,7 +469,7 @@ const Trends: React.FC = () => {
                             <div
                                 ref={tipsContainerRef}
                                 onScroll={() => handleScroll(tipsContainerRef, setTipsProgress)}
-                                className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing touch-pan-y -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory"
+                                className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory"
                             >
                                 {expertTips.map((tip) => (
                                     <div key={tip.id} className="min-w-[300px] md:min-w-[400px] p-8 bg-white/[0.03] border border-white/10 rounded-sm hover:border-secret-hot/30 hover:bg-white/[0.05] transition-all duration-300 relative group flex flex-col justify-between h-[250px] shadow-none hover:shadow-2xl snap-center">
