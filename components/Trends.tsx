@@ -596,30 +596,45 @@ const Trends: React.FC = () => {
                                     </p>
                                 </div>
 
-                                {/* AI GENERATED CONCEPTS GALLERY */}
+                                {/* RELATED TRENDS NAVIGATION */}
                                 <div className="mb-10">
                                     <div className="flex items-center gap-2 mb-4">
-                                        <Wand2 size={12} className="text-gray-400" />
+                                        <LayoutGrid size={12} className="text-gray-400" />
                                         <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                                            AI Визуализация Концептов
+                                            Похожие Образы
                                         </span>
                                     </div>
                                     <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 pb-4 md:grid md:grid-cols-2 md:gap-4 md:m-0 md:p-0 md:overflow-visible">
-                                        {selectedTrend.gallery.map((img, i) => (
-                                            <ScrollReveal key={i} variant="slide-up" delay={0.1 * i} className="min-w-[85%] md:min-w-0 shrink-0 snap-center rounded-lg overflow-hidden h-48 md:h-48 relative group cursor-pointer border border-gray-100">
-                                                <BlurImage
-                                                    src={img}
-                                                    alt={`AI Concept ${i}`}
-                                                    className="w-full h-full"
-                                                    imageClassName="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                                                />
-                                                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
-                                                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <div className="bg-white/90 p-1.5 rounded-full shadow-sm">
-                                                        <Sparkles size={12} className="text-secret-hot" />
+                                        {trends.filter(t => t.id !== selectedTrend.id).slice(0, 2).map((trend, i) => (
+                                            <div
+                                                key={trend.id}
+                                                className="min-w-[85%] md:min-w-0 shrink-0 snap-center relative group cursor-pointer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // Add a small scroll to top of modal content or just switch
+                                                    const modalContent = document.querySelector('.overflow-y-auto');
+                                                    if (modalContent) modalContent.scrollTop = 0;
+                                                    setSelectedTrend(trend);
+                                                }}
+                                            >
+                                                <ScrollReveal
+                                                    variant="slide-up"
+                                                    delay={0.1 * i}
+                                                    className="rounded-lg overflow-hidden h-48 md:h-48 relative border border-gray-100 w-full"
+                                                >
+                                                    <BlurImage
+                                                        src={trend.imageUrl}
+                                                        alt={trend.title}
+                                                        className="w-full h-full"
+                                                        imageClassName="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                                                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
+                                                        <p className="text-white font-serif italic text-lg">{trend.title}</p>
+                                                        <p className="text-white/70 font-sans text-[9px] uppercase tracking-widest">Смотреть</p>
                                                     </div>
-                                                </div>
-                                            </ScrollReveal>
+                                                </ScrollReveal>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
@@ -627,8 +642,9 @@ const Trends: React.FC = () => {
                                 <div className="bg-white p-8 rounded-2xl border border-gray-100 mb-8 shadow-sm">
                                     <div className="flex items-start gap-4">
                                         {/* Dynamic Gradient Avatar with Initials */}
-                                        <div className={`w-12 h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-gradient-to-tr ${selectedTrend.color.replace('text-', 'from-').replace('-400', '-100').replace('-500', '-100')} via-white to-gray-100 border border-gray-100`}>
-                                            <span className="font-serif italic font-bold text-gray-800">
+                                        {/* Dynamic Gradient Avatar with Initials */}
+                                        <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+                                            <span className="font-serif italic text-xl font-bold text-gray-900">
                                                 {selectedTrend.expertName.charAt(0)}
                                             </span>
                                         </div>
