@@ -2,14 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+  }
+
+  /* Vogue-style Typography Enhancements */
+  .tracking-widest-vogue {
+    letter-spacing: 0.2em;
+  }
+}
+
+:root {
   background-color: #FFFFFF;
   color: #050505;
   overflow-x: hidden;
 }
 
 ::selection {
-  background: #F9A8D4; /* Secret Pink */
+  background: #F9A8D4;
+  /* Secret Pink */
   color: #000;
 }
 

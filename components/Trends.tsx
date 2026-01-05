@@ -605,13 +605,15 @@ const Trends: React.FC = () => {
                                         </span>
                                     </div>
                                     <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 pb-4 md:grid md:grid-cols-2 md:gap-4 md:m-0 md:p-0 md:overflow-visible">
-                                        {trends.filter(t => t.id !== selectedTrend.id).slice(0, 2).map((trend, i) => (
+                                        {[
+                                            trends[(trends.findIndex(t => t.id === selectedTrend.id) + 1) % trends.length],
+                                            trends[(trends.findIndex(t => t.id === selectedTrend.id) + 2) % trends.length]
+                                        ].map((trend, i) => (
                                             <div
                                                 key={trend.id}
                                                 className="min-w-[85%] md:min-w-0 shrink-0 snap-center relative group cursor-pointer"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    // Add a small scroll to top of modal content or just switch
                                                     const modalContent = document.querySelector('.overflow-y-auto');
                                                     if (modalContent) modalContent.scrollTop = 0;
                                                     setSelectedTrend(trend);
