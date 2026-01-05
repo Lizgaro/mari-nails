@@ -264,6 +264,22 @@ const Trends: React.FC = () => {
         ref.current.scrollBy({ left: amount, behavior: 'smooth' });
     };
 
+    const handleNextTrend = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!selectedTrend) return;
+        const currentIndex = trends.findIndex(t => t.id === selectedTrend.id);
+        const nextIndex = (currentIndex + 1) % trends.length;
+        setSelectedTrend(trends[nextIndex]);
+    };
+
+    const handlePrevTrend = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!selectedTrend) return;
+        const currentIndex = trends.findIndex(t => t.id === selectedTrend.id);
+        const prevIndex = (currentIndex - 1 + trends.length) % trends.length;
+        setSelectedTrend(trends[prevIndex]);
+    };
+
     return (
         // SOLID VOGUE BLACK BACKGROUND
         <section className="py-32 bg-[#050505] text-white overflow-hidden relative" id="trends">
@@ -341,7 +357,7 @@ const Trends: React.FC = () => {
                         ref={scrollContainerRef}
                         onScroll={() => handleScroll(scrollContainerRef, setScrollProgress)}
                         className={viewMode === 'slider'
-                            ? "flex overflow-x-auto gap-6 md:gap-8 pb-12 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing touch-pan-y"
+                            ? "flex overflow-x-auto gap-6 md:gap-8 pb-12 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing touch-pan-y snap-x snap-mandatory"
                             : "grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 animate-fade-in"
                         }
                     >
@@ -349,7 +365,7 @@ const Trends: React.FC = () => {
                             <div
                                 key={trend.id}
                                 className={viewMode === 'slider'
-                                    ? "min-w-[85vw] md:min-w-[400px] group relative cursor-pointer"
+                                    ? "min-w-[85vw] md:min-w-[400px] group relative cursor-pointer snap-center"
                                     : "group relative cursor-pointer"
                                 }
                                 onClick={() => setSelectedTrend(trend)}
@@ -453,10 +469,10 @@ const Trends: React.FC = () => {
                             <div
                                 ref={tipsContainerRef}
                                 onScroll={() => handleScroll(tipsContainerRef, setTipsProgress)}
-                                className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing touch-pan-y -mx-6 px-6 md:mx-0 md:px-0"
+                                className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing touch-pan-y -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory"
                             >
                                 {expertTips.map((tip) => (
-                                    <div key={tip.id} className="min-w-[300px] md:min-w-[400px] p-8 bg-white/[0.03] border border-white/10 rounded-sm hover:border-secret-hot/30 hover:bg-white/[0.05] transition-all duration-300 relative group flex flex-col justify-between h-[250px] shadow-none hover:shadow-2xl">
+                                    <div key={tip.id} className="min-w-[300px] md:min-w-[400px] p-8 bg-white/[0.03] border border-white/10 rounded-sm hover:border-secret-hot/30 hover:bg-white/[0.05] transition-all duration-300 relative group flex flex-col justify-between h-[250px] shadow-none hover:shadow-2xl snap-center">
                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-secret-hot to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                                         <div>
                                             <Quote size={32} className="text-white/5 absolute top-6 right-6 group-hover:text-secret-hot/20 transition-colors" />
@@ -492,10 +508,10 @@ const Trends: React.FC = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/95 transition-all" onClick={() => setSelectedTrend(null)}></div>
 
-                    <div className="bg-white text-black w-full max-w-6xl h-[90vh] md:h-[85vh] rounded-none md:rounded-3xl relative z-10 animate-slide-up shadow-2xl overflow-hidden flex flex-col md:flex-row selection:bg-secret-pink selection:text-white">
+                    <div className="bg-white text-black w-full max-w-6xl h-[90vh] md:h-[95vh] rounded-none md:rounded-3xl relative z-10 animate-slide-up shadow-2xl overflow-hidden flex flex-col md:flex-row selection:bg-secret-pink selection:text-white">
 
                         {/* Desktop Image Side (Left) */}
-                        <div className="hidden md:block w-1/2 h-full relative">
+                        <div className="hidden md:block w-1/2 h-full relative group">
                             <Image
                                 src={selectedTrend.imageUrl}
                                 alt={selectedTrend.title}
@@ -503,18 +519,28 @@ const Trends: React.FC = () => {
                                 sizes="50vw"
                                 className="object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
                             <div className="absolute bottom-12 left-12 text-white">
                                 <div className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full mb-4">
                                     <span className="font-sans text-[10px] font-bold uppercase tracking-widest">{selectedTrend.expertName} Выбор</span>
                                 </div>
                             </div>
+
+                            {/* PREV/NEXT BUTTONS ON IMAGE (Desktop) */}
+                            <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <button onClick={handlePrevTrend} className="pointer-events-auto w-12 h-12 bg-black/30 hover:bg-white text-white hover:text-black rounded-full backdrop-blur-md flex items-center justify-center transition-all">
+                                    <ChevronLeft size={24} />
+                                </button>
+                                <button onClick={handleNextTrend} className="pointer-events-auto w-12 h-12 bg-black/30 hover:bg-white text-white hover:text-black rounded-full backdrop-blur-md flex items-center justify-center transition-all">
+                                    <ChevronRight size={24} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Content Side (Right) - Scrollable with Tint */}
                         <div className="w-full md:w-1/2 h-full overflow-y-auto relative bg-[#faf9f6] flex flex-col">
-                            {/* Mobile Image (Top) */}
-                            <div className="md:hidden w-full h-64 relative shrink-0">
+                            {/* Mobile Image (Top) with Navigation */}
+                            <div className="md:hidden w-full h-72 relative shrink-0">
                                 <Image
                                     src={selectedTrend.imageUrl}
                                     alt={selectedTrend.title}
@@ -522,12 +548,23 @@ const Trends: React.FC = () => {
                                     sizes="100vw"
                                     className="object-cover"
                                 />
+                                <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent"></div>
                                 <button
                                     onClick={() => setSelectedTrend(null)}
-                                    className="absolute top-4 right-4 z-20 p-2 bg-black/50 text-white rounded-full backdrop-blur-md"
+                                    className="absolute top-4 left-4 z-20 p-2 bg-black/50 text-white rounded-full backdrop-blur-md"
                                 >
                                     <X size={20} />
                                 </button>
+
+                                {/* Mobile Navigation Arrows overlaying image */}
+                                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 pointer-events-none">
+                                    <button onClick={handlePrevTrend} className="pointer-events-auto p-2 bg-black/30 text-white rounded-full backdrop-blur-sm">
+                                        <ChevronLeft size={24} />
+                                    </button>
+                                    <button onClick={handleNextTrend} className="pointer-events-auto p-2 bg-black/30 text-white rounded-full backdrop-blur-sm">
+                                        <ChevronRight size={24} />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Close Button Desktop */}
@@ -584,9 +621,11 @@ const Trends: React.FC = () => {
 
                                 <div className="bg-white p-8 rounded-2xl border border-gray-100 mb-8 shadow-sm">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-200">
-                                            {/* Placeholder expert avatar since real ones aren't available, using gray gradient */}
-                                            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-400"></div>
+                                        {/* Dynamic Gradient Avatar with Initials */}
+                                        <div className={`w-12 h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-gradient-to-tr ${selectedTrend.color.replace('text-', 'from-').replace('-400', '-100').replace('-500', '-100')} via-white to-gray-100 border border-gray-100`}>
+                                            <span className="font-serif italic font-bold text-gray-800">
+                                                {selectedTrend.expertName.charAt(0)}
+                                            </span>
                                         </div>
                                         <div>
                                             <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Мнение Эксперта</p>

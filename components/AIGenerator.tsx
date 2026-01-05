@@ -167,7 +167,7 @@ const AIGenerator: React.FC = () => {
                 };
 
             } else {
-                // Create Mode
+                // Create Mode - Enhanced "Vogue Quality" Prompt Wrapper
                 const currentPrompt = prompt || (activeStyle ? styles.find(s => s.id === activeStyle)?.prompt : '');
 
                 if (!currentPrompt) {
@@ -175,8 +175,12 @@ const AIGenerator: React.FC = () => {
                     return;
                 }
 
-                const fullPrompt = `High fashion editorial photography of a woman's hand with elegant fingers. Focus on the manicure. Style: ${currentPrompt}. 
-        The image must show the hand gracefully posed, visible fingers, soft skin texture, studio lighting, 8k resolution, photorealistic, Vogue magazine quality.`;
+                // VOGUE-QUALITY PROMPT ENGINEERING
+                const fullPrompt = `Ultra-realistic macro fashion photography of a woman's hand. 
+        Focus: Luxury high-end manicure. 
+        Style description: ${currentPrompt}. 
+        Details: Hyper-detailed skin texture, pores visible, soft natural lighting, cinematic depth of field, 8k resolution, sharp focus on nails, Vogue magazine aesthetic, professional hand model pose, jewelry details. 
+        Negative prompt: deformed fingers, extra fingers, ugly hands, blur, low quality, cartoon, illustration.`;
 
                 body = {
                     mode: 'create',
