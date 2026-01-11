@@ -423,7 +423,7 @@ const Trends: React.FC = () => {
 
                     {/* Progress Bar for Slider Mode */}
                     {viewMode === 'slider' && (
-                        <div className="w-full h-[1px] bg-white/10 mt-4 relative">
+                        <div className="hidden md:block w-full h-[1px] bg-white/10 mt-4 relative">
                             <div
                                 className="absolute top-0 left-0 h-full bg-secret-hot transition-all duration-300"
                                 style={{ width: `${Math.max(10, (100 / trends.length))}%`, left: `${scrollProgress * (1 - (1 / trends.length))}%` }}
@@ -469,14 +469,14 @@ const Trends: React.FC = () => {
                             <div
                                 ref={tipsContainerRef}
                                 onScroll={() => handleScroll(tipsContainerRef, setTipsProgress)}
-                                className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory touch-pan-y"
+                                className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory"
                             >
                                 {expertTips.map((tip) => (
-                                    <div key={tip.id} className="min-w-[85vw] md:min-w-[400px] p-8 bg-white/[0.03] border border-white/10 rounded-sm hover:border-secret-hot/30 hover:bg-white/[0.05] transition-all duration-300 relative group flex flex-col justify-between h-full shadow-none hover:shadow-2xl snap-center">
+                                    <div key={tip.id} className="min-w-[300px] md:min-w-[400px] p-8 bg-white/[0.03] border border-white/10 rounded-sm hover:border-secret-hot/30 hover:bg-white/[0.05] transition-all duration-300 relative group flex flex-col justify-between h-[250px] shadow-none hover:shadow-2xl snap-center">
                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-secret-hot to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                                         <div>
                                             <Quote size={32} className="text-white/5 absolute top-6 right-6 group-hover:text-secret-hot/20 transition-colors" />
-                                            <p className="font-serif text-xl md:text-2xl italic leading-relaxed text-gray-200 mb-6 relative z-10 font-light">
+                                            <p className="font-serif text-2xl italic leading-relaxed text-gray-200 mb-6 relative z-10 font-light">
                                                 "{tip.text}"
                                             </p>
                                         </div>
@@ -497,7 +497,7 @@ const Trends: React.FC = () => {
                             </div>
 
                             {/* Progress Bar for Tips */}
-                            <div className="w-full h-[1px] bg-white/10 mt-0 relative">
+                            <div className="hidden md:block w-full h-[1px] bg-white/10 mt-0 relative">
                                 <div
                                     className="absolute top-0 left-0 h-full bg-secret-hot transition-all duration-300"
                                     style={{ width: `${Math.max(10, (100 / expertTips.length))}%`, left: `${tipsProgress * (1 - (1 / expertTips.length))}%` }}
